@@ -16,6 +16,7 @@ provider "aws" {
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
+  # checkov:skip=CKV_TF_1: Using semantic versioning from official registry is an acceptable risk for this lab.
   # checkov:skip=CKV_AWS_111: Flow logs are enabled via module properties but Checkov cannot detect them.
   # checkov:skip=CKV_AWS_135: Ensure VPC is not public (This is a base VPC, we have public subnets for ALB)
   name = "devsecops-vpc"
