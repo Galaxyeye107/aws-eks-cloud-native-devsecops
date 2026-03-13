@@ -31,6 +31,10 @@ module "vpc" {
 
   enable_vpn_gateway = false
 
+  # --- BỔ SUNG flow_log ĐỂ PASS CHECKOV ---
+  enable_flow_log                      = true
+  create_flow_log_cloudwatch_iam_role  = true
+  create_flow_log_cloudwatch_log_group = true
   # Gán Tag để EKS có thể tự động nhận diện Subnet khi tạo Load Balancer
   public_subnet_tags = {
     "kubernetes.io/role/elb" = "1"
