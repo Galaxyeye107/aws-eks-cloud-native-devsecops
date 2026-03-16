@@ -12,7 +12,15 @@ terraform {
 provider "aws" {
   region = "ap-southeast-1"
 }
+provider "kubernetes" {
+  host                   = module.eks.cluster_endpoint
+  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+}
 
+data "aws_eks_cluster_auth" "cluster" {
+  name = module.eks.cluster_name
+}
 # Lấy thông tin VPC từ bài trước (Remote State)
 data "terraform_remote_state" "vpc" {
   backend = "s3"
@@ -68,6 +76,16 @@ module "eks" {
 
   # Tạo OIDC Provider để dùng IRSA (Rất quan trọng cho DevSecOps)
   enable_irsa = true
+  # Quản lý quyền truy cập bằng aws-auth (Cơ chế của v19)
+  manage_aws_auth_configmap = true
+
+  aws_auth_users = [
+    {
+      userarn  = "arn:aws:iam::837497587440:user/trung_devsecops" # ARN của bạn
+      username = "admin-user"
+      groups   = ["system:masters"] # Cấp quyền tối cao trong K8s
+    }
+  ]
   # Quan trọng: cho creator admin quyền cluster
   enable_cluster_creator_admin_permissions = true
 
