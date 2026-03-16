@@ -68,4 +68,22 @@ module "eks" {
 
   # Tạo OIDC Provider để dùng IRSA (Rất quan trọng cho DevSecOps)
   enable_irsa = true
+  # Quan trọng: cho creator admin quyền cluster
+  enable_cluster_creator_admin_permissions = true
+
+  access_entries = {
+    my_user = {
+      principal_arn = "arn:aws:iam::837497587440:user/trung_devsecops"
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
 }
