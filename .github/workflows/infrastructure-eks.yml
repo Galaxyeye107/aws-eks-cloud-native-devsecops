@@ -1,0 +1,41 @@
+name: "Infrastructure - EKS"
+
+on:
+  push:
+    paths:
+      - 'terraform/eks/**'
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  eks-deploy:
+    runs-on: ubuntu-latest
+    env:
+      TF_STATE_BUCKET: "tên-bucket-của-bạn"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-southeast-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: |
+          cd terraform/eks
+          terraform init \
+            -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" \
+            -backend-config="key=eks/terraform.tfstate" \
+            -backend-config="region=ap-southeast-1" \
+            -backend-config="dynamodb_table=devsecops-tf-locks"
+
+      - name: Terraform Apply
+        run: cd terraform/eks && terraform apply -auto-approve
