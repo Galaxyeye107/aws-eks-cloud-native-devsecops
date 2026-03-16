@@ -59,10 +59,10 @@ module "eks" {
   eks_managed_node_groups = {
     main = {
       min_size       = 1
-      max_size       = 2
+      max_size       = 1
       desired_size   = 1
-      instance_types = ["t3.medium"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
-      capacity_type  = "ON_DEMAND"   # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
+      instance_types = ["t3.micro"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
+      capacity_type  = "spot"       # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
     }
   }
 
