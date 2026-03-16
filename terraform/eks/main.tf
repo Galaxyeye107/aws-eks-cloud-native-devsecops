@@ -35,7 +35,7 @@ module "eks" {
   version = "19.15.3"
 
   cluster_name    = "devsecops-eks-cluster"
-  cluster_version = "1.27"
+  cluster_version = "1.35"
 
   # Bảo mật: Cho phép truy cập nội bộ và giới hạn public (Cấu hình demo)
   cluster_endpoint_public_access = true
