@@ -43,7 +43,7 @@ module "eks" {
   version = "19.15.3"
 
   cluster_name    = "devsecops-eks-cluster"
-  cluster_version = "1.35"
+  cluster_version = "1.31"
 
   # Bảo mật: Cho phép truy cập nội bộ và giới hạn public (Cấu hình demo)
   cluster_endpoint_public_access = true
@@ -87,21 +87,4 @@ module "eks" {
     }
   ]
   # Quan trọng: cho creator admin quyền cluster
-  enable_cluster_creator_admin_permissions = true
-
-  access_entries = {
-    my_user = {
-      principal_arn = "arn:aws:iam::837497587440:user/trung_devsecops"
-
-      policy_associations = {
-        admin = {
-          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-
-          access_scope = {
-            type = "cluster"
-          }
-        }
-      }
-    }
-  }
 }
