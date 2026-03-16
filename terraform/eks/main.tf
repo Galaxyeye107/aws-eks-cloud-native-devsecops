@@ -17,7 +17,7 @@ provider "aws" {
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
-    bucket = "tên-bucket-của-bạn"
+    bucket = "trung-devsecops-eks-tfstate-prod"
     key    = "vpc/terraform.tfstate"
     region = "ap-southeast-1"
   }

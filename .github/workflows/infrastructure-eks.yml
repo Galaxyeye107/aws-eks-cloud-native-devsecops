@@ -15,7 +15,7 @@ jobs:
   eks-deploy:
     runs-on: ubuntu-latest
     env:
-      TF_STATE_BUCKET: "tên-bucket-của-bạn"
+      TF_STATE_BUCKET: "trung-devsecops-eks-tfstate-prod"
     steps:
       - uses: actions/checkout@v3
 
