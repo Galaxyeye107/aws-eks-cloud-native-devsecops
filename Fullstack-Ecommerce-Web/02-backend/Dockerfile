@@ -7,7 +7,7 @@ RUN mvn clean package -DskipTests
 # Stage 2: Runtime (Sử dụng Distroless hoặc Alpine để giảm diện tích tấn công)
 FROM eclipse-temurin:17-jre-alpine
 # THÊM DÒNG NÀY: Cập nhật các bản vá OS mới nhất (sửa lỗi zlib, gnutls)
-RUN apk update && apk upgrade && rm -rf /var/cache/apk/*
+RUN apk update && apk upgrade --no-cache && rm -rf /var/cache/apk/*
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring 
 # Tại sao? Chạy App bằng user thường, không dùng ROOT.
