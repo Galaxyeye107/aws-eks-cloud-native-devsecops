@@ -17,13 +17,14 @@
         <java.version>17</java.version>
         <snakeyaml.version>2.2</snakeyaml.version>
         <tomcat.version>10.1.45</tomcat.version>
-        <spring-security.version>6.4.6</spring-security.version>
+        <spring-security.version>6.4.10</spring-security.version>
+        <spring-framework.version>6.2.11</spring-framework.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-bom</artifactId>
-            <version>6.4.6</version>
+            <version>6.4.10</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
