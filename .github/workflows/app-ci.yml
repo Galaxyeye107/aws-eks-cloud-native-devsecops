@@ -6,6 +6,35 @@ on:
       - 'Fullstack-Ecommerce-Web/**' # Chạy khi có bất kỳ thay đổi nào trong thư mục app
 
 jobs:
+  # ================= NEW: SAST ANALYSIS =================
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Build Backend trước để Sonar có file .class phân tích sâu hơn
+      - name: Build Backend Classes
+        run: |
+          cd Fullstack-Ecommerce-Web/02-backend
+          mvn clean compile 
+
+      # QUÉT MỘT LẦN DUY NHẤT CHO CẢ HAI
+      - name: SonarCloud Unified Scan
+        uses: SonarSource/sonarcloud-scan-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: Fullstack-Ecommerce-Web
+          # Nó sẽ tự động đọc file sonar-project.properties chúng ta vừa tạo
   # ================= J1: BACKEND CI =================
   backend-ci:
     runs-on: ubuntu-latest
