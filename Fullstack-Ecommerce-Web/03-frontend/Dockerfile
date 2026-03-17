@@ -19,7 +19,7 @@ USER nginx
 # Copy file đã build từ stage 1
 COPY --from=build /app/dist/angular-ecommerce /usr/share/nginx/html
 
-# Copy file cấu hình Nginx tùy chỉnh (Xem bước dưới)
+# Copy file cấu hình Nginx tùy chỉnh (Xem bước dưới để tạo file này)
 # COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
