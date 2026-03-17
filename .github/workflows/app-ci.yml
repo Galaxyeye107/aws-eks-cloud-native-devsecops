@@ -28,7 +28,7 @@ jobs:
 
       # QUÉT MỘT LẦN DUY NHẤT CHO CẢ HAI
       - name: SonarCloud Unified Scan
-        uses: SonarSource/sonarcloud-scan-action@v3.1.0 # Sử dụng phiên bản cụ thể thay vì @master
+        uses: SonarSource/sonarcloud-github-action@v2 # Sử dụng phiên bản cụ thể thay vì @master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
