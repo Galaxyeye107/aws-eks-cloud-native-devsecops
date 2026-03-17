@@ -7,7 +7,8 @@ COPY . .
 RUN npm run build --configuration=production
 
 # Stage 2: Serve với Nginx (Bản Alpine để giảm thiểu lỗ hổng)
-FROM nginx:alpine
+FROM nginx:alpine:3.23.4
+RUN apk update && apk upgrade --no-cache
 
 # Bảo mật: Đổi chủ sở hữu thư mục cache và pid để Nginx chạy được với user thường
 RUN touch /var/run/nginx.pid && \
