@@ -2,7 +2,8 @@
 FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+# Sửa lại dòng số 5 trong Stage 1
+RUN npm install --ignore-scripts
 COPY . .
 RUN npm run build --configuration=production
 
