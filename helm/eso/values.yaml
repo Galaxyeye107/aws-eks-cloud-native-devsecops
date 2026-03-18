@@ -1,3 +1,20 @@
-# Cấu hình tùy chỉnh cho External Secrets Operator
-# Hiện tại chúng ta sẽ dùng mặc định, nhưng file này giúp Terraform/Actions biết chỗ để quản lý.
-replicaCount: 1
+# Bóp tài nguyên xuống mức tối thiểu cho Lab
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 50m
+    memory: 64Mi
+
+webhook:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+
+certController:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
