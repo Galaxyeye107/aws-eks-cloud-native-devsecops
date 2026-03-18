@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-backend
+  labels:
+    app: ecommerce-backend
+spec:
+  replicas: 1
+  # Vì chúng ta dùng t3.micro, hãy dùng Recreate để tránh bị treo IP như nãy
+  strategy:
+    type: Recreate 
+  selector:
+    matchLabels:
+      app: ecommerce-backend
+  template:
+    metadata:
+      labels:
+        app: ecommerce-backend
+    spec:
+      serviceAccountName: ecommerce-sa # Sử dụng SA đã gắn IRSA
+      containers:
+      - name: backend-app
+        # Thay bằng tên Image bạn đã đẩy lên Docker Hub ở Bước 6
+        image: your-docker-hub-user/02-backend_spring-boot-rest-api:latest
+        ports:
+        - containerPort: 8080
+        # Bóp tài nguyên để chạy vừa khít trên t3.micro
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "200m"
+            memory: "512Mi"
+        env:
+        # Lấy thông tin từ Secret do ESO tạo ra
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: username
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: password
+        # Cấu hình URL Database (Giả sử bạn sẽ cài MySQL ở bước sau hoặc dùng RDS)
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://mysql-service:3306/full-stack-ecommerce?useSSL=false&allowPublicKeyRetrieval=true"

@@ -31,4 +31,6 @@ jobs:
           kubectl apply -f kubernetes/service-account.yaml
           kubectl apply -f kubernetes/secret-store.yaml
           kubectl apply -f kubernetes/external-secret.yaml
+          kubectl apply -f kubernetes/backend-deployment.yaml
+          kubectl apply -f kubernetes/backend-service.yaml
           # Sau này bạn thêm file backend-deployment.yaml vào đây luôn
