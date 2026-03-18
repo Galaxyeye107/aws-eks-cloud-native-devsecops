@@ -18,3 +18,5 @@ certController:
     requests:
       cpu: 10m
       memory: 32Mi
+
+installCRDs: true # Ép Helm phải cài đặt các định nghĩa SecretStore, ExternalSecret
