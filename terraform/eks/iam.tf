@@ -80,16 +80,3 @@ module "lb_controller_role" {
     }
   }
 }
-
-############################################
-# 5. Outputs (tuỳ chọn nhưng nên có)
-############################################
-output "secrets_manager_role_arn" {
-  description = "ARN cua IAM Role cho External Secrets"
-  value       = module.allow_secrets_manager_role.iam_role_arn
-}
-
-output "lb_controller_role_arn" {
-  description = "ARN cua IAM Role cho AWS Load Balancer Controller"
-  value       = module.lb_controller_role.iam_role_arn
-}
