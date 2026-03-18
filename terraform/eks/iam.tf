@@ -18,6 +18,7 @@ resource "aws_iam_policy" "eks_secrets_policy" {
 # Tạo IAM Role gắn với Service Account trong K8s
 module "allow_secrets_manager_role" {
   source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version   = "~> 5.0"
   role_name = "eks-secrets-manager-role"
 
   role_policy_arns = {
