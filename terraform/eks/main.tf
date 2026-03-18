@@ -70,7 +70,7 @@ module "eks" {
       max_size       = 3
       desired_size   = 2
       instance_types = ["t3.micro"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
-      capacity_type  = "SPOT"       # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
+      capacity_type  = "ON_DEMAND"  # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
     }
   }
 
