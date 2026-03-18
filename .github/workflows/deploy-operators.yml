@@ -6,6 +6,9 @@ on:
 jobs:
   install-eso:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Bắt buộc để dùng OIDC
+      contents: read  # Bắt buộc để checkout code
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
