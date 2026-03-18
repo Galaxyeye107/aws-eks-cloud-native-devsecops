@@ -1,0 +1,16 @@
+clusterName: devsecops-eks-cluster # Tên cluster bạn đặt trong Terraform
+region: ap-southeast-1
+vpcId: "" # Để trống, Controller sẽ tự động tìm VPC qua tag của Cluster
+
+serviceAccount:
+  create: true
+  name: aws-load-balancer-controller
+  annotations:
+    # THAY THẾ ARN DƯỚI ĐÂY BẰNG ARN ROLE Terraform vừa tạo (eks-lb-controller-role)
+    eks.amazonaws.com/role-arn: arn:aws:iam::837497587440:role/eks-lb-controller-role
+
+# Quan trọng: Đảm bảo Controller không bị "đá" khỏi Node khi tài nguyên thấp
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
