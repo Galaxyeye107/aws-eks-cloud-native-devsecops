@@ -21,7 +21,7 @@ spec:
       containers:
       - name: backend-app
         # Thay bằng tên Image bạn đã đẩy lên Docker Hub ở Bước 6
-        image: your-docker-hub-user/02-backend_spring-boot-rest-api:latest
+        image: galaxyeye107/ecommerce-backend:latest
         ports:
         - containerPort: 8080
         # Bóp tài nguyên để chạy vừa khít trên t3.micro
