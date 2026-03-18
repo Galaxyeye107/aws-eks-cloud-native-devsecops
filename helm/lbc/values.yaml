@@ -8,7 +8,7 @@ serviceAccount:
   annotations:
     # THAY THẾ ARN DƯỚI ĐÂY BẰNG ARN ROLE Terraform vừa tạo (eks-lb-controller-role)
     eks.amazonaws.com/role-arn: arn:aws:iam::837497587440:role/eks-lb-controller-role
-
+replicaCount: 1 # Chỉ chạy 1 Pod thay vì 2
 # Quan trọng: Đảm bảo Controller không bị "đá" khỏi Node khi tài nguyên thấp
 resources:
   requests:
