@@ -17,6 +17,14 @@ spec:
         image: galaxyeye107/ecommerce-frontend:latest
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "32Mi"
+          limits:
+            cpu: "100m" 
+            memory: "64Mi" # Frontend thường nhẹ hơn, nên bóp tài nguyên nhỏ hơn để chạy mượt trên t3.micro
+      
 ---
 apiVersion: v1
 kind: Service

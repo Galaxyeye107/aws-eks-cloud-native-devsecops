@@ -20,7 +20,7 @@ spec:
       serviceAccountName: ecommerce-sa # Sử dụng SA đã gắn IRSA
       containers:
       - name: backend-app
-        # Thay bằng tên Image bạn đã đẩy lên Docker Hub ở Bước 6
+        # Thay bằng tên Image bạn đã đẩy lên Docker Hub
         image: galaxyeye107/ecommerce-backend:latest
         ports:
         - containerPort: 8080

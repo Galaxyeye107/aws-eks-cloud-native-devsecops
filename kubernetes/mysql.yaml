@@ -39,8 +39,11 @@ spec:
           mountPath: /docker-entrypoint-initdb.d # Thư mục tự động chạy SQL của MySQL
         resources:
           requests:
-            cpu: 50m
-            memory: 128Mi
+            cpu: 50m # Yêu cầu tối thiểu 0.05 CPU
+            memory: 128Mi # Yêu cầu tối thiểu 128MB RAM
+          limits:
+            cpu: 500m #Tối đa dùng 0.5 CPU
+            memory: 512Mi #Tối đa dùng 512MB RAM
       volumes:
       - name: init-scripts
         configMap:
