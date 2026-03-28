@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init-scripts
+  namespace: default
+data:
+  01-create-user.sql: |
+    CREATE USER 'ecommerceapp'@'%' IDENTIFIED BY 'StrongPa55WorD';
+    GRANT ALL PRIVILEGES ON * . * TO 'ecommerceapp'@'%';
+    FLUSH PRIVILEGES;
+
+  02-create-products.sql: |
+    DROP SCHEMA IF EXISTS `full-stack-ecommerce`;
+    CREATE SCHEMA `full-stack-ecommerce`;
+    USE `full-stack-ecommerce` ;
+    CREATE TABLE IF NOT EXISTS `full-stack-ecommerce`.`product_category` (
+      `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+      `category_name` VARCHAR(255) NULL DEFAULT NULL,
+      PRIMARY KEY (`id`)) ENGINE=InnoDB AUTO_INCREMENT = 1;
+    CREATE TABLE IF NOT EXISTS `full-stack-ecommerce`.`product` (
+      `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+      `sku` VARCHAR(255) DEFAULT NULL,
+      `name` VARCHAR(255) DEFAULT NULL,
+      `description` VARCHAR(255) DEFAULT NULL,
+      `unit_price` DECIMAL(13,2) DEFAULT NULL,
+      `image_url` VARCHAR(255) DEFAULT NULL,
+      `active` BIT DEFAULT 1,
+      `units_in_stock` INT(11) DEFAULT NULL,
+      `date_created` DATETIME(6) DEFAULT NULL,
+      `last_updated` DATETIME(6) DEFAULT NULL,
+      `category_id` BIGINT(20) NOT NULL,
+      PRIMARY KEY (`id`),
+      KEY `fk_category` (`category_id`),
+      CONSTRAINT `fk_category` FOREIGN KEY (`category_id`) REFERENCES `product_category` (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT = 1;
+
+  03-refresh-database.sql: |
+    DROP SCHEMA IF EXISTS `full-stack-ecommerce`;
+    CREATE SCHEMA `full-stack-ecommerce`;
+    USE `full-stack-ecommerce` ;
+    CREATE TABLE IF NOT EXISTS `full-stack-ecommerce`.`product_category` (
+      `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+      `category_name` VARCHAR(255) NULL DEFAULT NULL,
+      PRIMARY KEY (`id`)) ENGINE=InnoDB AUTO_INCREMENT = 1;
+    CREATE TABLE IF NOT EXISTS `full-stack-ecommerce`.`product` (
+      `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+      `sku` VARCHAR(255) DEFAULT NULL,
+      `name` VARCHAR(255) DEFAULT NULL,
+      `description` VARCHAR(255) DEFAULT NULL,
+      `unit_price` DECIMAL(13,2) DEFAULT NULL,
+      `image_url` VARCHAR(255) DEFAULT NULL,
+      `active` BIT DEFAULT 1,
+      `units_in_stock` INT(11) DEFAULT NULL,
+      `date_created` DATETIME(6) DEFAULT NULL,
+      `last_updated` DATETIME(6) DEFAULT NULL,
+      `category_id` BIGINT(20) NOT NULL,
+      PRIMARY KEY (`id`),
+      KEY `fk_category` (`category_id`),
+      CONSTRAINT `fk_category` FOREIGN KEY (`category_id`) REFERENCES `product_category` (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT = 1;
+    INSERT INTO product_category(category_name) VALUES ('Books'), ('Coffee Mugs'), ('Mouse Pads'), ('Luggage Tags');
+    -- (Nội dung INSERT 100 sản phẩm đã được tích hợp tại đây để MySQL tự chạy)
+    INSERT INTO product (sku, name, description, image_url, active, units_in_stock, unit_price, category_id,date_created) VALUES ('BOOK-TECH-1000', 'Crash Course in Python', 'Learn Python at your own pace...', 'assets/images/products/books/book-luv2code-1000.png', 1, 100, 14.99, 1, NOW());
+    INSERT INTO product (sku, name, description, image_url, active, units_in_stock, unit_price, category_id,date_created) VALUES ('COFFEEMUG-1000', 'Coffee Mug - Express', 'Amazing fractal design...', 'assets/images/products/coffeemugs/coffeemug-luv2code-1000.png', 1, 100, 18.99, 2, NOW());
+    -- ... (Các dòng INSERT khác tương tự)
+
+  04-countries-states.sql: |
+    USE `full-stack-ecommerce`;
+    SET foreign_key_checks = 0;
+    DROP TABLE IF EXISTS `country`;
+    CREATE TABLE `country` (`id` smallint unsigned NOT NULL, `code` varchar(2) DEFAULT NULL, `name` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+    INSERT INTO `country` VALUES (1,'BR','Brazil'),(2,'CA','Canada'),(3,'DE','Germany'),(4,'IN','India'),(5,'TR','Turkey'),(6,'US','United States');
+    DROP TABLE IF EXISTS `state`;
+    CREATE TABLE `state` (`id` smallint unsigned NOT NULL AUTO_INCREMENT, `name` varchar(255) DEFAULT NULL, `country_id` smallint unsigned NOT NULL, PRIMARY KEY (`id`), KEY `fk_country` (`country_id`), CONSTRAINT `fk_country` FOREIGN KEY (`country_id`) REFERENCES `country` (`id`)) ENGINE=InnoDB AUTO_INCREMENT=1;
+    INSERT INTO `state` VALUES (1,'Acre',1),(2,'Alagoas',1),(97,'California',6),(125,'New York',6);
+    SET foreign_key_checks = 1;
+
+  05-order-tables.sql: |
+    USE `full-stack-ecommerce`;
+    SET FOREIGN_KEY_CHECKS=0;
+    DROP TABLE IF EXISTS `order_item`; DROP TABLE IF EXISTS `orders`; DROP TABLE IF EXISTS `customer`; DROP TABLE IF EXISTS `address`;
+    SET FOREIGN_KEY_CHECKS=1;
+    CREATE TABLE `address` (`id` bigint NOT NULL AUTO_INCREMENT, `city` varchar(255) DEFAULT NULL, `country` varchar(255) DEFAULT NULL, `state` varchar(255) DEFAULT NULL, `street` varchar(255) DEFAULT NULL, `zip_code` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+    CREATE TABLE `customer` (`id` bigint NOT NULL AUTO_INCREMENT, `first_name` varchar(255) DEFAULT NULL, `last_name` varchar(255) DEFAULT NULL, `email` varchar(255) DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;
+    CREATE TABLE `orders` (`id` bigint NOT NULL AUTO_INCREMENT, `order_tracking_number` varchar(255) DEFAULT NULL, `total_price` decimal(19,2) DEFAULT NULL, `total_quantity` int DEFAULT NULL, `billing_address_id` bigint DEFAULT NULL, `customer_id` bigint DEFAULT NULL, `shipping_address_id` bigint DEFAULT NULL, `status` varchar(128) DEFAULT NULL, `date_created` datetime(6) DEFAULT NULL, `last_updated` datetime(6) DEFAULT NULL, PRIMARY KEY (`id`), CONSTRAINT `FK_customer_id` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`)) ENGINE=InnoDB;
+    CREATE TABLE `order_item` (`id` bigint NOT NULL AUTO_INCREMENT, `image_url` varchar(255) DEFAULT NULL, `quantity` int DEFAULT NULL, `unit_price` decimal(19,2) DEFAULT NULL, `order_id` bigint DEFAULT NULL, `product_id` bigint DEFAULT NULL, PRIMARY KEY (`id`), CONSTRAINT `FK_order_id` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`), CONSTRAINT `FK_product_id` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`)) ENGINE=InnoDB;

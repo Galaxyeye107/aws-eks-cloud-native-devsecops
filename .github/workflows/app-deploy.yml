@@ -35,4 +35,6 @@ jobs:
           kubectl apply -f kubernetes/backend-service.yaml
           kubectl apply -f kubernetes/frontend-deployment.yaml
           kubectl apply -f kubernetes/ingress.yaml
+          kubectl apply -f kubernetes/mysql-configmap.yaml
+          kubectl apply -f kubernetes/mysql.yaml
           # Sau này bạn thêm file backend-deployment.yaml vào đây luôn
