@@ -66,8 +66,8 @@ module "eks" {
   # Managed Node Group (Worker Nodes)
   eks_managed_node_groups = {
     main = {
-      min_size       = 1
-      max_size       = 5
+      min_size       = 2
+      max_size       = 6
       desired_size   = 5            # Cấu hình đủ để chạy lab.
       instance_types = ["t3.micro"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
       capacity_type  = "ON_DEMAND"  # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
