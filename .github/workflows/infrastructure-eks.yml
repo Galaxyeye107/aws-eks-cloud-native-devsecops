@@ -6,7 +6,7 @@ on:
       - 'terraform/eks/**'
     branches:
       - main
-
+  workflow_dispatch: # Thêm cái này để bạn có thể bấm chạy lại tay khi cần
 permissions:
   id-token: write
   contents: read
@@ -39,3 +39,8 @@ jobs:
 
       - name: Terraform Apply
         run: cd terraform/eks && terraform apply -auto-approve
+
+      # 2. NHẬN CHÌA KHÓA (Cập nhật Kubeconfig để dùng được kubectl)
+      - name: Update Kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.CLUSTER_NAME }}

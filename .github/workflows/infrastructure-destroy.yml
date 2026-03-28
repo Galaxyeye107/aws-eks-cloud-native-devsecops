@@ -1,7 +1,7 @@
 name: "Infrastructure - Destroy"
 
 on:
-  workflow_dispatch: # chỉ chạy khi bấm tay
+  workflow_dispatch: # Chỉ chạy khi bấm tay
 
 permissions:
   id-token: write
@@ -11,9 +11,9 @@ env:
   AWS_REGION: ap-southeast-1
   TF_STATE_BUCKET: trung-devsecops-eks-tfstate-prod
   TF_LOCK_TABLE: devsecops-tf-locks
+  CLUSTER_NAME: devsecops-eks-cluster # Đặt tên cluster vào biến môi trường cho dễ dùng
 
 jobs:
-
   destroy-eks:
     name: Destroy EKS
     runs-on: ubuntu-latest
@@ -31,6 +31,21 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # --- BƯỚC QUAN TRỌNG: XÓA INGRESS TRƯỚC ---
+      - name: Configure Kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.CLUSTER_NAME }}
+
+      - name: Delete Kubernetes Ingress
+        run: |
+          # Xóa tất cả ingress trong tất cả namespace
+          kubectl delete ingress --all --all-namespaces || true
+          
+          # Đợi 2 phút để AWS có thời gian xóa bỏ Load Balancer thực tế
+          echo "Waiting 120s for AWS Load Balancer to be fully deleted..."
+          sleep 120 
+      # ------------------------------------------
+
       - name: Terraform Destroy EKS
         run: |
           cd terraform/eks
@@ -41,7 +56,6 @@ jobs:
             -backend-config="dynamodb_table=${{ env.TF_LOCK_TABLE }}"
 
           terraform destroy -auto-approve
-
 
   destroy-vpc:
     name: Destroy VPC
