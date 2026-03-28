@@ -66,15 +66,11 @@ module "eks" {
   # Managed Node Group (Worker Nodes)
   eks_managed_node_groups = {
     main = {
-      min_size       = 2
+      min_size       = 1
       max_size       = 4
-      desired_size   = 4            # Cấu hình đủ để chạy lab.
-      instance_types = ["t3.micro"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
-      capacity_type  = "ON_DEMAND"  # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
-      # Ép Node tính lại max-pods dựa trên Prefix Delegation
-      post_bootstrap_user_data = <<-EOT
-      /etc/eks/bootstrap.sh ${module.eks.cluster_name} --use-max-pods false --kubelet-extra-args '--max-pods=110'
-    EOT
+      desired_size   = 4             # Cấu hình đủ để chạy lab.
+      instance_types = ["t3a.small"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
+      capacity_type  = "ON_DEMAND"   # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
     }
   }
 
