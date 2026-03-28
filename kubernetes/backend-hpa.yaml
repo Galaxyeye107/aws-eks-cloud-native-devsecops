@@ -1,0 +1,18 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ecommerce-backend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ecommerce-backend # Phải trùng tên với Deployment của bạn
+  minReplicas: 1  # Luôn giữ ít nhất 2 Pod để dự phòng (High Availability) trong lab dùng 1 tiết kiệm tài nguyên
+  maxReplicas: 5  # Tối đa chỉ nở ra 5 Pod để tránh cháy túi tiền AWS
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50 # Nếu CPU trung bình > 50% thì scale up
