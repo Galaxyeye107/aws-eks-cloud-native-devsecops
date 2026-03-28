@@ -116,10 +116,12 @@ resource "helm_release" "metrics_server" {
   chart      = "metrics-server"
   namespace  = "kube-system"
 
-  set {
-    name  = "args"
-    value = "{--kubelet-insecure-tls}" # Cần thiết cho một số môi trường EKS đặc thù
-  }
+  set = [
+    {
+      name  = "args"
+      value = "{--kubelet-insecure-tls}" # Cần thiết cho một số môi trường EKS đặc thù
+    }
+  ]
 
   depends_on = [module.eks]
 }
