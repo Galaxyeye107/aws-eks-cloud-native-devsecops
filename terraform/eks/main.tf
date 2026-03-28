@@ -6,22 +6,41 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 2.9.0"
+    }
   }
 }
 
 provider "aws" {
   region = "ap-southeast-1"
 }
+
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
   cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
+# 1. Khai báo Provider Helm
+provider "helm" {
+  kubernetes {
+    host                   = module.eks.cluster_endpoint
+    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
+      command     = "aws"
+    }
+  }
+}
+
 data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_name
 }
-# Lấy thông tin VPC từ bài trước (Remote State)
+
+# Lấy thông tin VPC từ Remote State
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
@@ -87,4 +106,19 @@ module "eks" {
     }
   ]
   # Quan trọng: cho creator admin quyền cluster
+}
+
+# 2. Cài Metrics Server bằng Helm chart
+resource "helm_release" "metrics_server" {
+  name       = "metrics-server"
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  chart      = "metrics-server"
+  namespace  = "kube-system"
+
+  set {
+    name  = "args"
+    value = "{--kubelet-insecure-tls}" # Cần thiết cho một số môi trường EKS đặc thù
+  }
+
+  depends_on = [module.eks]
 }
