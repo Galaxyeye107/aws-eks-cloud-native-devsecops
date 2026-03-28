@@ -20,7 +20,7 @@ export class AuthInterceptorService implements HttpInterceptor{
   private async handleAccess(request: HttpRequest<any>, next: HttpHandler): Promise<HttpEvent<any>> {
 
     //only add an access token for secured endpoints
-    const securedEndpoints = ['http://k8s-default-ecommerc-2b19b0b60c-742252716.ap-southeast-1.elb.amazonaws.com/api/orders'];
+    const securedEndpoints = ['http://api-ecommerce.devopsedu.vn/api/orders'];
 
     if(securedEndpoints.some(url => request.urlWithParams.includes(url))){
 
