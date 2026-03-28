@@ -9,9 +9,9 @@ import {ProductCategory} from "../common/product-category";
 })
 export class ProductService {
 
-  private baseUrl = "http://api-ecommerce.devopsedu.vn/api/products";
+  private baseUrl = "http://k8s-default-ecommerc-2b19b0b60c-742252716.ap-southeast-1.elb.amazonaws.com/api/products";
 
-  private categoryUrl = "http://api-ecommerce.devopsedu.vn/api/product-category";
+  private categoryUrl = "http://k8s-default-ecommerc-2b19b0b60c-742252716.ap-southeast-1.elb.amazonaws.com/api/product-category";
 
   //injecting httpClient
   constructor(private httpClient: HttpClient) { }

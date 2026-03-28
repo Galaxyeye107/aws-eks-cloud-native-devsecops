@@ -8,7 +8,7 @@ import {OrderHistory} from "../common/order-history";
 })
 export class OrderHistoryService {
 
-  private orderUrl = "http://api-ecommerce.devopsedu.vn/api/orders";
+  private orderUrl = "http://k8s-default-ecommerc-2b19b0b60c-742252716.ap-southeast-1.elb.amazonaws.com/api/orders";
   constructor(private httpClient: HttpClient) { }
 
 

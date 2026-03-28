@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
 })
 export class CheckoutService {
 
-  private purchaseUrl = 'http://api-ecommerce.devopsedu.vn/api/checkout/purchase';
+  private purchaseUrl = 'http://k8s-default-ecommerc-2b19b0b60c-742252716.ap-southeast-1.elb.amazonaws.com/api/checkout/purchase';
   constructor(private httpClient: HttpClient) {
 
   }
