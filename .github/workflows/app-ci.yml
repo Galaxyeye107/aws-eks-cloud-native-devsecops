@@ -1,6 +1,7 @@
 name: "App CI - Build & Security Scan"
 
 on:
+  workflow_dispatch: 
   push:
     paths:
       - 'Fullstack-Ecommerce-Web/**' # Chạy khi có bất kỳ thay đổi nào trong thư mục app
