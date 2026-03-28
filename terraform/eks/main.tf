@@ -68,9 +68,9 @@ module "eks" {
     main = {
       min_size       = 1
       max_size       = 3
-      desired_size   = 1             # Cấu hình đủ để chạy lab.
-      instance_types = ["t3a.small"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
-      capacity_type  = "ON_DEMAND"   # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
+      desired_size   = 1            # Cấu hình đủ để chạy lab.
+      instance_types = ["t3.small"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
+      capacity_type  = "ON_DEMAND"  # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
     }
   }
 
