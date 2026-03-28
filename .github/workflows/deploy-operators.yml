@@ -35,3 +35,5 @@ jobs:
             --create-namespace \
             --set installCRDs=true \
             -f helm/eso/values.yaml # Sử dụng file cấu hình bạn vừa tạo
+          helm repo add autoscaler https://kubernetes.github.io/autoscaler
+          helm repo update
