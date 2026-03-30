@@ -255,6 +255,11 @@ Ingress → AWS ALB → Kubernetes Services
 - Sử dụng **Ansible** để tự động hóa cấu hình máy trạm (Admin-PC) và thiết lập môi trường đồng nhất cho đội ngũ phát triển.
 - Thực hiện OS Hardening cho các Worker Nodes để tăng cường bảo mật hệ thống.
 
+### 🏗️ Phase 9: Enterprise CI/CD với Jenkins trên Kubernetes
+- Triển khai **Jenkins** theo mô hình Master-Agent trên cụm EKS bằng Helm.
+- Tự động hóa việc khởi tạo **Dynamic Build Agents** dưới dạng Kubernetes Pods để tối ưu hiệu năng và chi phí.
+- Xây dựng hệ thống CI/CD "On-premise" hoàn chỉnh, độc lập với các dịch vụ Cloud bên thứ ba.
+
 # 🚀 Deployment Guide
 
 Run GitHub Actions workflows theo thứ tự:
