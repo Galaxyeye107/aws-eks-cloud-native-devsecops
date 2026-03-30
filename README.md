@@ -247,6 +247,13 @@ Ingress → AWS ALB → Kubernetes Services
 * Auto Sync Cluster
 
 ---
+### 🌐 Phase 7: Distributed Tracing
+- Triển khai **Jaeger** hoặc **OpenTelemetry** để theo dõi luồng request xuyên suốt Microservices.
+- Tối ưu hóa độ trễ (Latency) và tìm kiếm điểm nghẽn hiệu năng.
+
+### 🤖 Phase 8: Configuration Management với Ansible
+- Sử dụng **Ansible** để tự động hóa cấu hình máy trạm (Admin-PC) và thiết lập môi trường đồng nhất cho đội ngũ phát triển.
+- Thực hiện OS Hardening cho các Worker Nodes để tăng cường bảo mật hệ thống.
 
 # 🚀 Deployment Guide
 
