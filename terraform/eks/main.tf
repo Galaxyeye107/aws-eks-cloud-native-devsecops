@@ -75,6 +75,9 @@ resource "helm_release" "metrics_server" {
   chart      = "metrics-server"
   namespace  = "kube-system"
 
+  force_update    = true # Ép buộc cập nhật nếu đã tồn tại
+  cleanup_on_fail = true # Tự dọn dẹp nếu cài lỗi
+
   set = [
     {
       name  = "args"
