@@ -39,7 +39,10 @@ jobs:
 
       - name: Terraform Apply
         run: cd terraform/eks && terraform apply -auto-approve
-
+      - name: Get Cluster name
+        run: 
+          cd terraform/eks
+          echo "CLUSTER_NAME=$(terraform output -raw cluster_name)" >> $GITHUB_ENV
       # 2. NHẬN CHÌA KHÓA (Cập nhật Kubeconfig để dùng được kubectl)
       - name: Update Kubeconfig
         run: |

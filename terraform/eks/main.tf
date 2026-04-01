@@ -87,13 +87,46 @@ module "eks" {
   eks_managed_node_groups = {
     main = {
       min_size       = 1
-      max_size       = 3
+      max_size       = 5
       desired_size   = 2            # Cấu hình đủ để chạy lab.
       instance_types = ["t3.small"] # Đủ để chạy lab, đừng dùng t3.micro vì sẽ thiếu RAM
       capacity_type  = "ON_DEMAND"  # tài khoản free tier không có spot instance, nếu có thể thì dùng SPOT để tiết kiệm chi phí
+      tags = {
+        "k8s.io/cluster-autoscaler/enabled"             = "true"
+        "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
+      }
     }
   }
+  # 2. Tạo IAM Policy để CA có quyền gọi AWS Auto Scaling Group
+  resource "aws_iam_policy" "cluster_autoscaler" {
+    name        = "AmazonEKSClusterAutoscalerPolicy"
+    description = "Quyền cho phép Cluster Autoscaler co giãn Node"
 
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Action = [
+            "autoscaling:DescribeAutoScalingGroups",
+            "autoscaling:DescribeAutoScalingInstances",
+            "autoscaling:DescribeLaunchConfigurations",
+            "autoscaling:DescribeTags",
+            "autoscaling:SetDesiredCapacity",
+            "autoscaling:TerminateInstanceInAutoScalingGroup",
+            "ec2:DescribeLaunchTemplateVersions"
+          ]
+          Effect   = "Allow"
+          Resource = "*"
+        }
+      ]
+    })
+  }
+
+  # 3. Gán Policy này vào IAM Role của Node Group (để Node có quyền thực thi)
+  resource "aws_iam_role_policy_attachment" "cluster_autoscaler_attach" {
+    policy_arn = aws_iam_policy.cluster_autoscaler.arn
+    role       = module.eks.eks_managed_node_groups["main"].iam_role_name
+  }
   # Tạo OIDC Provider để dùng IRSA (Rất quan trọng cho DevSecOps)
   enable_irsa = true
   # Quản lý quyền truy cập bằng aws-auth (Cơ chế của v19)
@@ -124,4 +157,26 @@ resource "helm_release" "metrics_server" {
   ]
 
   depends_on = [module.eks]
+}
+resource "helm_release" "cluster_autoscaler" {
+  name       = "cluster-autoscaler"
+  repository = "https://kubernetes.github.io/autoscaler"
+  chart      = "cluster-autoscaler"
+  namespace  = "kube-system"
+
+  set {
+    name  = "autoDiscovery.clusterName"
+    value = module.eks.cluster_name
+  }
+
+  set {
+    name  = "awsRegion"
+    value = var.aws_region
+  }
+
+  # Quan trọng: Đảm bảo CA chạy trên nền tảng AWS
+  set {
+    name  = "cloudProvider"
+    value = "aws"
+  }
 }
