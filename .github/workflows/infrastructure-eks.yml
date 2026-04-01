@@ -27,7 +27,8 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
-
+        with:
+          terraform_wrapper: false # TẮT CÁI NÀY ĐỂ TRÁNH LỖI INVALID FORMAT
       - name: Terraform Init
         run: |
           cd terraform/eks
