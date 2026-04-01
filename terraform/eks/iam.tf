@@ -80,3 +80,32 @@ module "lb_controller_role" {
     }
   }
 }
+# 5. Tạo IAM Policy để CA có quyền gọi AWS Auto Scaling Group
+resource "aws_iam_policy" "cluster_autoscaler" {
+  name        = "AmazonEKSClusterAutoscalerPolicy"
+  description = "Quyền cho phép Cluster Autoscaler co giãn Node"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeTags",
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup",
+          "ec2:DescribeLaunchTemplateVersions"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+}
+# 6. Gán Policy này vào IAM Role của Node Group (để Node có quyền thực thi)
+resource "aws_iam_role_policy_attachment" "cluster_autoscaler_attach" {
+  policy_arn = aws_iam_policy.cluster_autoscaler.arn
+  role       = module.eks.eks_managed_node_groups["main"].iam_role_name
+}

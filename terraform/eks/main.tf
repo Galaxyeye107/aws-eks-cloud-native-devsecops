@@ -97,36 +97,6 @@ module "eks" {
       }
     }
   }
-  # 2. Tạo IAM Policy để CA có quyền gọi AWS Auto Scaling Group
-  resource "aws_iam_policy" "cluster_autoscaler" {
-    name        = "AmazonEKSClusterAutoscalerPolicy"
-    description = "Quyền cho phép Cluster Autoscaler co giãn Node"
-
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          Action = [
-            "autoscaling:DescribeAutoScalingGroups",
-            "autoscaling:DescribeAutoScalingInstances",
-            "autoscaling:DescribeLaunchConfigurations",
-            "autoscaling:DescribeTags",
-            "autoscaling:SetDesiredCapacity",
-            "autoscaling:TerminateInstanceInAutoScalingGroup",
-            "ec2:DescribeLaunchTemplateVersions"
-          ]
-          Effect   = "Allow"
-          Resource = "*"
-        }
-      ]
-    })
-  }
-
-  # 3. Gán Policy này vào IAM Role của Node Group (để Node có quyền thực thi)
-  resource "aws_iam_role_policy_attachment" "cluster_autoscaler_attach" {
-    policy_arn = aws_iam_policy.cluster_autoscaler.arn
-    role       = module.eks.eks_managed_node_groups["main"].iam_role_name
-  }
   # Tạo OIDC Provider để dùng IRSA (Rất quan trọng cho DevSecOps)
   enable_irsa = true
   # Quản lý quyền truy cập bằng aws-auth (Cơ chế của v19)
@@ -141,8 +111,37 @@ module "eks" {
   ]
   # Quan trọng: cho creator admin quyền cluster
 }
+# 2. Tạo IAM Policy để CA có quyền gọi AWS Auto Scaling Group
+resource "aws_iam_policy" "cluster_autoscaler" {
+  name        = "AmazonEKSClusterAutoscalerPolicy"
+  description = "Quyền cho phép Cluster Autoscaler co giãn Node"
 
-# 2. Cài Metrics Server bằng Helm chart
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeTags",
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup",
+          "ec2:DescribeLaunchTemplateVersions"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+}
+# 3. Gán Policy này vào IAM Role của Node Group (để Node có quyền thực thi)
+resource "aws_iam_role_policy_attachment" "cluster_autoscaler_attach" {
+  policy_arn = aws_iam_policy.cluster_autoscaler.arn
+  role       = module.eks.eks_managed_node_groups["main"].iam_role_name
+}
+
+# 4. Cài Metrics Server bằng Helm chart
 resource "helm_release" "metrics_server" {
   name       = "metrics-server"
   repository = "https://kubernetes-sigs.github.io/metrics-server/"
