@@ -1,53 +1,10 @@
-terraform {
-  required_version = ">= 1.0.0"
-  backend "s3" {}
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = ">= 2.9.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = "ap-southeast-1"
-}
-
-provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-}
-
-# 1. Khai báo Provider Helm
-provider "helm" {
-  kubernetes = {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-    exec = {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", module.eks.cluster_name]
-    }
-  }
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_name
-}
-
 # Lấy thông tin VPC từ Remote State
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
-    bucket = "trung-devsecops-eks-tfstate-prod"
+    bucket = var.tf_state_bucket
     key    = "vpc/terraform.tfstate"
-    region = "ap-southeast-1"
+    region = var.aws_region
   }
 }
 
@@ -133,19 +90,20 @@ resource "helm_release" "cluster_autoscaler" {
   chart      = "cluster-autoscaler"
   namespace  = "kube-system"
 
-  set {
-    name  = "autoDiscovery.clusterName"
-    value = module.eks.cluster_name
-  }
+  set = [
+    {
+      name  = "autoDiscovery.clusterName"
+      value = module.eks.cluster_name
+    },
+    {
+      name  = "awsRegion"
+      value = var.aws_region
+    },
+    {
+      name  = "cloudProvider"
+      value = "aws"
+    }
+  ]
 
-  set {
-    name  = "awsRegion"
-    value = var.aws_region
-  }
-
-  # Quan trọng: Đảm bảo CA chạy trên nền tảng AWS
-  set {
-    name  = "cloudProvider"
-    value = "aws"
-  }
+  depends_on = [module.eks]
 }
