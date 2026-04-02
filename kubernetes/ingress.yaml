@@ -17,7 +17,7 @@ spec:
               service:
                 name: ecommerce-backend-service
                 port:
-                  number: 8080
+                  number: 80
     - host: ecommerce.devopsedu.vn      # (Tùy chọn) Domain cho Frontend
       http:
         paths:
