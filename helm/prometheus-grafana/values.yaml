@@ -1,0 +1,20 @@
+# Cấu hình tối giản cho môi trường Lab
+prometheus:
+  prometheusSpec:
+    retention: 1d # Chỉ lưu data trong 1 ngày để tiết kiệm disk
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
+
+grafana:
+  adminPassword: "admin" # Mật khẩu đăng nhập
+  persistence:
+    enabled: false # Không dùng volume ngoài để tránh lỗi kẹt EBS
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
