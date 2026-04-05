@@ -18,3 +18,7 @@ grafana:
     limits:
       cpu: 100m
       memory: 128Mi
+  sidecar:
+    datasources:
+      enabled: true
+      isDefaultDatasource: true # Giữ cái này làm mặc định
