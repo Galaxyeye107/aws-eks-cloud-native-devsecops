@@ -36,3 +36,12 @@ jobs:
             --namespace monitoring \
             --create-namespace \
             -f helm/prometheus-grafana/values.yaml
+
+      - name: Deploy Logging Stack (Loki & Promtail)
+        run: |
+          helm repo add grafana https://grafana.github.io/helm-charts
+          helm repo update
+          helm upgrade --install loki grafana/loki-stack \
+            --namespace monitoring \
+            --set loki.persistence.enabled=false \
+            -f helm/loki/values.yaml
