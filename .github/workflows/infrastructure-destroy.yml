@@ -31,6 +31,12 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
       # --- BƯỚC QUAN TRỌNG: XÓA INGRESS TRƯỚC ---
       - name: Configure Kubeconfig
         run: |
@@ -45,6 +51,37 @@ jobs:
           echo "Waiting 120s for AWS Load Balancer to be fully deleted..."
           sleep 120 
       # ------------------------------------------
+      
+      # ---  DỌN DẸP MONITORING VÀ PVCs ---
+      - name: Cleanup Monitoring, Logging & Tracing
+        run: |
+          echo "1. Gỡ cài đặt các Helm Chart..."
+          helm uninstall kube-prometheus-stack -n monitoring || true
+          helm uninstall loki -n monitoring || true
+          helm uninstall jaeger -n monitoring || true
+
+          echo "2. Xóa các Service LoadBalancer (Để giải phóng AWS ALB/NLB)..."
+          # Chúng ta cần xóa SVC trước để AWS gỡ mapping ở tầng Cloud
+          kubectl delete svc --all -n monitoring || true
+
+          echo "3. Xóa PVCs để giải phóng ổ đĩa EBS..."
+          kubectl delete pvc --all -n monitoring || true
+
+          echo "4. Xóa Namespace (Không chờ đợi)..."
+          kubectl delete namespace monitoring --wait=false || true
+
+          echo "5. Chờ 60s để tài nguyên Cloud (ALB/EBS) được giải phóng..."
+          sleep 60
+
+          # KIỂM TRA: Nếu namespace vẫn còn (bị kẹt Terminating), xử dụng Finalizer
+          if kubectl get namespace monitoring; then
+            echo "Phát hiện Namespace bị kẹt, đang thực hiện Force Cleanup..."
+            kubectl get namespace monitoring -o json \
+            | jq '.spec.finalizers = []' \
+            | kubectl replace --raw "/api/v1/namespaces/monitoring/finalize" -f - || true
+          fi
+
+          echo "Cleanup hoàn tất sạch sẽ!"
 
       - name: Terraform Destroy EKS
         run: |

@@ -45,3 +45,11 @@ jobs:
             --namespace monitoring \
             --set loki.persistence.enabled=false \
             -f helm/loki/values.yaml
+    
+      - name: Deploy Tracing Stack (Jaeger)
+        run: |
+          helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+          helm repo update
+          helm upgrade --install jaeger jaegertracing/jaeger \
+            --namespace monitoring \
+            -f helm/jaeger/values.yaml

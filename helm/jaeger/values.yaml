@@ -1,0 +1,18 @@
+# Cấu hình Jaeger tối giản
+allInOne:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+storage:
+  type: memory # Lưu tạm trên RAM để không tốn ổ cứng EBS
+agent:
+  enabled: true
+collector:
+  enabled: true
+query:
+  enabled: true
