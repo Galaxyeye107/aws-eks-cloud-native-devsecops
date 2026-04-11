@@ -38,3 +38,4 @@ jobs:
           kubectl apply -f kubernetes/mysql-configmap.yaml
           kubectl apply -f kubernetes/mysql.yaml
           kubectl apply -f kubernetes/backend-hpa.yaml
+          kubectl apply -f kubernetes/storage-class.yaml
