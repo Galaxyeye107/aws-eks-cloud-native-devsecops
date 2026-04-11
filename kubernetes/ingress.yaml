@@ -6,7 +6,11 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    # Cấu hình Health Check để ALB không đánh dấu Pod là "Unhealthy"
+    alb.ingress.kubernetes.io/healthcheck-path: /api/products
+    alb.ingress.kubernetes.io/healthcheck-port: '8080'
 spec:
+  ingressClassName: alb # Khắc phục lỗi CLASS <none>
   rules:
     - host: api-ecommerce.devopsedu.vn  # <--- THÊM DÒNG NÀY
       http:
