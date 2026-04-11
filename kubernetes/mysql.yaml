@@ -1,18 +1,21 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-service # Tên này phải khớp với SPRING_DATASOURCE_URL trong Backend
+  name: mysql-service # GIỮ NGUYÊN TÊN NÀY để Backend không bị lỗi kết nối
 spec:
   ports:
     - port: 3306
   selector:
     app: mysql
+  clusterIP: None # Chuyển thành Headless Service để tối ưu cho StatefulSet
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet # CHUYỂN TỪ Deployment SANG StatefulSet
 metadata:
   name: mysql
 spec:
+  serviceName: "mysql-service" # Phải khớp với tên Service ở trên
+  replicas: 1
   selector:
     matchLabels:
       app: mysql
@@ -34,17 +37,30 @@ spec:
           value: full-stack-ecommerce
         ports:
         - containerPort: 3306
+          name: mysql
         volumeMounts:
         - name: init-scripts
-          mountPath: /docker-entrypoint-initdb.d # Thư mục tự động chạy SQL của MySQL
+          mountPath: /docker-entrypoint-initdb.d
+        - name: mysql-data # GẮN THÊM VOLUME NÀY
+          mountPath: /var/lib/mysql # Đây là nơi dữ liệu thực được lưu
         resources:
           requests:
-            cpu: 50m # Yêu cầu tối thiểu 0.05 CPU
-            memory: 128Mi # Yêu cầu tối thiểu 128MB RAM
+            cpu: 50m
+            memory: 128Mi
           limits:
-            cpu: 500m #Tối đa dùng 0.5 CPU
-            memory: 512Mi #Tối đa dùng 512MB RAM
+            cpu: 500m
+            memory: 512Mi
       volumes:
       - name: init-scripts
         configMap:
           name: mysql-init-scripts
+  # ĐÂY LÀ PHẦN QUAN TRỌNG NHẤT: TỰ ĐỘNG TẠO Ổ ĐĨA EBS
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "ebs-sc" # Phải trùng với tên StorageClass bạn tạo ở bước tiếp theo
+      resources:
+        requests:
+          storage: 1Gi
