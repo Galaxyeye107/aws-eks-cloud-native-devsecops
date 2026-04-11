@@ -44,7 +44,7 @@ jobs:
           helm repo update
           helm upgrade --install aws-ebs-csi-driver aws-ebs-csi-driver/aws-ebs-csi-driver \
             --namespace kube-system \
-            --set controller.replicaCount=1 # Tiết kiệm tài nguyên cho t3.small \
+            --set controller.replicaCount=1 \ # Tiết kiệm tài nguyên cho t3.small
             --set controller.serviceAccount.create=true \
             --set controller.serviceAccount.name=ebs-csi-controller-sa \
             --set controller.serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=${{ secrets.EBS_CSI_ROLE_ARN }}
