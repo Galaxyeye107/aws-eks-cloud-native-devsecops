@@ -106,3 +106,24 @@ resource "aws_iam_role_policy_attachment" "cluster_autoscaler_attach" {
   policy_arn = aws_iam_policy.cluster_autoscaler.arn
   role       = module.eks.eks_managed_node_groups["main"].iam_role_name
 }
+# 7. thêm ebs vào module aws_iam_role_policy_attachment cho EBS CSI Driver
+module "ebs_csi_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.0"
+
+  role_name = "eks-ebs-csi-role"
+
+  role_policy_arns = {
+    policy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+  }
+
+  oidc_providers = {
+    main = {
+      provider_arn = module.eks.oidc_provider_arn
+
+      namespace_service_accounts = [
+        "kube-system:ebs-csi-controller-sa"
+      ]
+    }
+  }
+}
