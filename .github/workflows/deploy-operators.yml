@@ -47,4 +47,4 @@ jobs:
             --set controller.replicaCount=1 \
             --set controller.serviceAccount.create=true \
             --set controller.serviceAccount.name=ebs-csi-controller-sa \
-            --set controller.serviceAccount.annotations."eks\.amazonaws\.com/role-arn"=${{ secrets.EBS_CSI_ROLE_ARN }}
+            --set controller.serviceAccount.annotations."eks\.amazonaws\.com/role-arn"="${{ secrets.EBS_CSI_ROLE_ARN }}"
