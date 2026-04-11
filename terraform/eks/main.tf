@@ -67,6 +67,17 @@ module "eks" {
     }
   ]
   # Quan trọng: cho creator admin quyền cluster
+  # cài addons để bật network policy
+  cluster_addons = {
+    vpc-cni = {
+      addon_version     = "v1.18.1-eksbuild.3"
+      resolve_conflicts = "OVERWRITE"
+      configuration_values = jsonencode({
+        enableNetworkPolicy = "true" # Đây là dòng "chốt hạ" để bật chặn mạng
+      })
+    }
+    # Có thể thêm các addon khác như kube-proxy, coredns ở đây
+  }
 }
 # 2. Cài Metrics Server bằng Helm chart
 resource "helm_release" "metrics_server" {
