@@ -11,6 +11,10 @@ RUN npm run build --configuration=production
 FROM nginx:alpine
 RUN apk update && apk upgrade --no-cache
 
+
+# Copy file cấu hình Nginx tùy chỉnh (Xem bước dưới để tạo file này)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Bảo mật: Đổi chủ sở hữu thư mục cache và pid để Nginx chạy được với user thường
 RUN touch /var/run/nginx.pid && \
     chown -R nginx:nginx /var/run/nginx.pid /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
@@ -20,9 +24,6 @@ USER nginx
 
 # Copy file đã build từ stage 1
 COPY --from=build /app/dist/angular-ecommerce /usr/share/nginx/html
-
-# Copy file cấu hình Nginx tùy chỉnh (Xem bước dưới để tạo file này)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
