@@ -57,23 +57,30 @@ jobs:
           echo "1. Đang xóa Network Policy"
           kubectl delete networkpolicy --all --all-namespaces || true
 
-          echo "2. Đang xóa các ứng dụng chính (Frontend, Backend, MySQL)..."
-          kkubectl delete statefulset --all --all-namespaces || true
-          kubectl delete deployment --all --all-namespaces || true
-          kubectl delete svc --all --all-namespaces || true
-
-          echo "3. Đang giải phóng toàn bộ PVC và PV (Bài 1)..."
+          echo "2. Đang giải phóng toàn bộ PVC và PV để AWS xóa EBS Volumes..."
           # Xóa PVC trước để kích hoạt lệnh xóa EBS trên AWS
           kubectl delete pvc --all --all-namespaces || true
           # Xóa PV (nếu chúng còn sót lại)
           kubectl delete pv --all || true
           sleep 30 # Đợi 30s để AWS nhận lệnh xóa EBS và giải phóng tài nguyên
 
-          echo "4. Đang xóa Managed Addon VPC-CNI (Để tránh kẹt Cluster)..."
+          echo "3. Đang xóa các ứng dụng chính (Frontend, Backend, MySQL)..."
+          kubectl delete statefulset --all -n default || true
+          kubectl delete deployment --all -n default || true
+          kubectl delete svc --all -n default || true
+
+          echo "4. Force xóa finalizers nếu còn sót (Phòng hờ bị kẹt)"
+          kubectl get pvc --all-namespaces -o json | jq '.items[] | select(.metadata.deletionTimestamp != null) | .metadata.name' | xargs -I {} kubectl patch pvc {} -p '{"metadata":{"finalizers":null}}' --type=merge || true
+
+          echo "5. Delete StorageClass ebs-sc..."
+          kubectl delete sc ebs-sc || true
+          sleep 30
+
+          echo "6. Đang xóa Managed Addon VPC-CNI (Để tránh kẹt Cluster)..."
           # Bước này rất quan trọng vì mình đã dùng lệnh create-addon thủ công
           aws eks delete-addon --cluster-name ${{ env.CLUSTER_NAME }} --addon-name vpc-cni || true
           
-          echo "5. Chờ 30s để hệ thống ổn định trước khi chạy Terraform..."
+          echo "7. Chờ 30s để hệ thống ổn định trước khi chạy Terraform..."
           sleep 30
       # ---  DỌN DẸP MONITORING VÀ PVCs ---
       - name: Cleanup Monitoring, Logging & Tracing
